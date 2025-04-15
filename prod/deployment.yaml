@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-video-srt-app
+  labels:
+    app: my-video-srt-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-video-srt-app
+  template:
+    metadata:
+      labels:
+        app: my-video-srt-app
+    spec:
+      containers:
+      - name: my-video-srt-app
+        image: luminoussg/my-video-srt-app:v1.2
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+          requests:
+            cpu: "500m"
+            memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-video-srt-app
+spec:
+  selector:
+    app: my-video-srt-app
+  ports:
+  - port: 80
+    targetPort: 8080
+  type: ClusterIP 
