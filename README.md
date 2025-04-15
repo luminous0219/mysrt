@@ -25,7 +25,10 @@ ArgoCD will automatically sync the application and deploy it to your Kubernetes 
 
 ## Accessing the Application
 
-The application is exposed through a Kubernetes Service of type ClusterIP. To access it from outside the cluster, you can either:
+The application is exposed through a Kubernetes Service of type NodePort with port 30080. You can access it from your local network using:
 
-1. Set up an Ingress resource
-2. Use port-forwarding: `kubectl port-forward svc/my-video-srt-app 8080:80` 
+```
+http://<proxmox-server-ip>:30080
+```
+
+Where `<proxmox-server-ip>` is the IP address of your Proxmox server on your local network. 
