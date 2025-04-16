@@ -25,29 +25,44 @@ ArgoCD will automatically sync the application and deploy it to your Kubernetes 
 
 ## Accessing the Application
 
-The application is exposed through a Kubernetes Service of type NodePort with port 30080. You can access it using any of your Kubernetes node IPs:
+The application is exposed through multiple NodePort services to ensure compatibility:
 
+### Web Interface (HTTP)
 ```
 http://192.168.31.100:30080
-```
-
-Or:
-
-```
 http://192.168.31.101:30080
-```
-
-Or:
-
-```
 http://192.168.31.102:30080
 ```
 
+### SRT Protocol (TCP)
+```
+srt://192.168.31.100:31935
+srt://192.168.31.101:31935
+srt://192.168.31.102:31935
+```
+
+### SRT Protocol (UDP)
+```
+srt://192.168.31.100:31935
+srt://192.168.31.101:31935
+srt://192.168.31.102:31935
+```
+
+### Alternative SRT Port (UDP)
+```
+srt://192.168.31.100:34200
+srt://192.168.31.101:34200
+srt://192.168.31.102:34200
+```
+
+Try accessing the application using any of these addresses on your Kubernetes nodes.
+
 ## Important Notes
 
-1. The application container uses port 3000 internally (standard for many Node.js applications)
-2. The service routes external traffic on port 80 to container port 3000
-3. The NodePort service exposes this on port 30080 on all cluster nodes
+Based on research of similar SRT applications:
+1. SRT typically uses UDP protocol, so try the UDP port options first
+2. SRT often uses port 1935 (standard) or 4200 (seen in some implementations)
+3. The web interface is likely on port 8080 inside the container (mapped to 30080 on nodes)
 
 ## Troubleshooting
 
@@ -73,4 +88,4 @@ If you're unable to access the application:
    kubectl logs -l app=my-video-srt-app
    ```
 
-5. Make sure your firewall allows traffic to port 30080 on your Kubernetes nodes. 
+5. Make sure your firewall allows traffic to the NodePort ports (30080, 31935, 34200) on your Kubernetes nodes. 

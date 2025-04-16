@@ -18,10 +18,20 @@ spec:
       - name: my-video-srt-app
         image: luminoussg/my-video-srt-app:v1.2
         ports:
-        - containerPort: 3000
+        - containerPort: 8080  # For possible web UI
+          name: web
+        - containerPort: 1935  # Common SRT port
+          name: srt-tcp
+          protocol: TCP
+        - containerPort: 1935  # Common SRT port (UDP)
+          name: srt-udp
+          protocol: UDP
+        - containerPort: 4200  # Alternative SRT port 
+          name: srt-alt
+          protocol: UDP
         env:
         - name: PORT
-          value: "3000"
+          value: "8080"
         resources:
           limits:
             cpu: "1"
@@ -39,6 +49,22 @@ spec:
     app: my-video-srt-app
   ports:
   - port: 80
-    targetPort: 3000
+    targetPort: 8080
     nodePort: 30080
+    name: web
+  - port: 1935
+    targetPort: 1935
+    protocol: TCP
+    nodePort: 31935
+    name: srt-tcp
+  - port: 1935
+    targetPort: 1935
+    protocol: UDP 
+    nodePort: 31935
+    name: srt-udp
+  - port: 4200
+    targetPort: 4200
+    protocol: UDP
+    nodePort: 34200
+    name: srt-alt
   type: NodePort 
