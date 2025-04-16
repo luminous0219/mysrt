@@ -50,9 +50,9 @@ srt://192.168.31.102:31935
 
 ### Alternative SRT Port (UDP)
 ```
-srt://192.168.31.100:34200
-srt://192.168.31.101:34200
-srt://192.168.31.102:34200
+srt://192.168.31.100:32400
+srt://192.168.31.101:32400
+srt://192.168.31.102:32400
 ```
 
 Try accessing the application using any of these addresses on your Kubernetes nodes.
@@ -88,4 +88,4 @@ If you're unable to access the application:
    kubectl logs -l app=my-video-srt-app
    ```
 
-5. Make sure your firewall allows traffic to the NodePort ports (30080, 31935, 34200) on your Kubernetes nodes. 
+5. Make sure your firewall allows traffic to the NodePort ports (30080, 31935, 32400) on your Kubernetes nodes. 

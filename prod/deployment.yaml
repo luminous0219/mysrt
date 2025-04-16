@@ -65,6 +65,6 @@ spec:
   - port: 4200
     targetPort: 4200
     protocol: UDP
-    nodePort: 34200
+    nodePort: 32400
     name: srt-alt
   type: NodePort 
