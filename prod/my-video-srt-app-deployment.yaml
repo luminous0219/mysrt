@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-video-srt-app
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: my-video-srt-app
+  template:
+    metadata:
+      labels:
+        app: my-video-srt-app
+    spec:
+      containers:
+      - image: luminoussg/my-video-srt-app:v1.2
+        name: my-video-srt-app
+        ports:
+        - containerPort: 8080
+          name: web
+        - containerPort: 1935
+          name: srt-tcp
+          protocol: TCP
+        - containerPort: 1935
+          name: srt-udp
+          protocol: UDP
+        - containerPort: 4200
+          name: srt-alt
+          protocol: UDP 

@@ -4,58 +4,75 @@ This repository contains Kubernetes manifests for deploying the `luminoussg/my-v
 
 ## Files
 
-- `prod/deployment.yaml`: Contains the Deployment and Service definitions
+- `prod/my-video-srt-app-deployment.yaml`: Deployment definition
+- `prod/my-video-srt-app-svc.yaml`: Service definition 
 - `prod/kustomization.yaml`: Kustomize configuration for the application
 
 ## Deploying with ArgoCD
 
 To deploy this application with ArgoCD:
 
-1. In the ArgoCD UI, click "New App"
-2. Set the application name (e.g., "my-video-srt-app")
-3. Set the project to "default" (or your preferred ArgoCD project)
-4. For "Sync Policy", choose your preferred option (e.g., "Automatic")
-5. For repository URL, use the URL of this Git repository
-6. For path, use "prod" (the folder containing the manifests)
-7. For destination cluster, use "in-cluster" (or your preferred cluster)
-8. For namespace, use "default" (or your preferred namespace)
-9. Click "Create" to deploy the application
+1. In the ArgoCD UI, click "+ New App" (top-left corner)
 
-ArgoCD will automatically sync the application and deploy it to your Kubernetes cluster.
+2. Fill in the application details:
+   - Application Name: my-video-srt-app
+   - Project: default
+   - Sync Policy: Manual (or Automatic if you prefer GitOps automation)
+   - Repository URL: [Your Git Repository URL]
+   - Revision: HEAD
+   - Path: prod
+   - Cluster URL: https://kubernetes.default.svc (your in-cluster Kubernetes)
+   - Namespace: default
+
+3. Click "Create"
+
+4. Click "Sync" to deploy the application to your cluster
 
 ## Accessing the Application
 
-The application is exposed through multiple NodePort services to ensure compatibility:
+After deployment, the service will automatically be assigned NodePort values. To find out which ports were assigned, run:
 
-### Web Interface (HTTP)
 ```
-http://192.168.31.100:30080
-http://192.168.31.101:30080
-http://192.168.31.102:30080
+kubectl get svc my-video-srt-app
 ```
 
-### SRT Protocol (TCP)
+You should see output similar to:
 ```
-srt://192.168.31.100:31935
-srt://192.168.31.101:31935
-srt://192.168.31.102:31935
-```
-
-### SRT Protocol (UDP)
-```
-srt://192.168.31.100:31935
-srt://192.168.31.101:31935
-srt://192.168.31.102:31935
+NAME               TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                                     AGE
+my-video-srt-app   NodePort   10.111.26.128   <none>        80:30XXX/TCP,1935:31XXX/TCP,1935:31XXX/UDP,4200:32XXX/UDP   1m
 ```
 
-### Alternative SRT Port (UDP)
+Where 30XXX, 31XXX, and 32XXX are the assigned NodePort values.
+
+Access the application using any of your Kubernetes node IPs with the appropriate NodePort:
+
+- Web UI: http://192.168.31.100:30XXX (replace 30XXX with actual web port)
+- SRT (TCP): srt://192.168.31.100:31XXX (replace 31XXX with actual SRT TCP port)
+- SRT (UDP): srt://192.168.31.100:31XXX (replace 31XXX with actual SRT UDP port)
+- Alternative SRT (UDP): srt://192.168.31.100:32XXX (replace 32XXX with actual SRT alt port)
+
+## Port Forwarding (Alternative Access Method)
+
+If you prefer not to use NodePort, you can set up port forwarding similar to the guestbook example:
+
 ```
-srt://192.168.31.100:32400
-srt://192.168.31.101:32400
-srt://192.168.31.102:32400
+# Forward web interface
+kubectl port-forward svc/my-video-srt-app 8080:80
+
+# Forward SRT port
+kubectl port-forward svc/my-video-srt-app 1935:1935
 ```
 
-Try accessing the application using any of these addresses on your Kubernetes nodes.
+Then access the application at:
+- Web UI: http://localhost:8080
+- SRT: srt://localhost:1935
+
+## About SRT Applications
+
+Based on research:
+1. SRT typically uses UDP protocol (but may also use TCP)
+2. Common SRT ports are 1935 (standard) and 4200
+3. Web interfaces typically run on port 8080 inside the container
 
 ## Important Notes
 
