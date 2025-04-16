@@ -43,6 +43,12 @@ Or:
 http://192.168.31.102:30080
 ```
 
+## Important Notes
+
+1. The application container uses port 3000 internally (standard for many Node.js applications)
+2. The service routes external traffic on port 80 to container port 3000
+3. The NodePort service exposes this on port 30080 on all cluster nodes
+
 ## Troubleshooting
 
 If you're unable to access the application:
@@ -57,14 +63,14 @@ If you're unable to access the application:
    kubectl get svc my-video-srt-app
    ```
 
-3. Check the logs for the application:
+3. Check the endpoints to see if the service is connected to the pods:
+   ```
+   kubectl get endpoints my-video-srt-app
+   ```
+
+4. Check the logs for the application:
    ```
    kubectl logs -l app=my-video-srt-app
    ```
 
-4. Make sure your firewall allows traffic to port 30080 on your Kubernetes nodes.
-
-5. Verify that the application is actually listening on port 8080 inside the container:
-   ```
-   kubectl exec -it $(kubectl get pod -l app=my-video-srt-app -o name) -- netstat -tulpn
-   ``` 
+5. Make sure your firewall allows traffic to port 30080 on your Kubernetes nodes. 

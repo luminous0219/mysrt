@@ -18,7 +18,10 @@ spec:
       - name: my-video-srt-app
         image: luminoussg/my-video-srt-app:v1.2
         ports:
-        - containerPort: 8080
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: "3000"
         resources:
           limits:
             cpu: "1"
@@ -35,8 +38,7 @@ spec:
   selector:
     app: my-video-srt-app
   ports:
-  - name: http
-    port: 80
-    targetPort: 8080
+  - port: 80
+    targetPort: 3000
     nodePort: 30080
   type: NodePort 
